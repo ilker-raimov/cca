@@ -2,8 +2,9 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/ilker-raimov/cca/log"
 )
 
 type LoginRequest struct {
@@ -20,8 +21,6 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 
 	defer request.Body.Close()
 
-	fmt.Println("Login:")
-
 	var login LoginRequest
 
 	decoder := json.NewDecoder(request.Body)
@@ -32,16 +31,16 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	fmt.Printf("Email: %s\n", login.Email)
-	fmt.Printf("Password: %s\n", login.Password)
+	log.InfoF("Email: %s", login.Email)
+	log.InfoF("Password: %s", login.Password)
 
 	if login.Email == "fail" || login.Password == "fail" {
-		fmt.Println("Unsuccessful login")
+		log.Info("Unsuccessful login")
 
 		http.Error(writer, "Invalid credentials", http.StatusBadRequest)
 
 		return
 	}
 
-	fmt.Println("Successful login")
+	log.Info("Successful login")
 }

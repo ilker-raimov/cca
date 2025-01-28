@@ -1,13 +1,14 @@
 package interceptor
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/ilker-raimov/cca/log"
 )
 
 func LogInterceptor(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Request:", r.Method, r.URL.Path)
+		log.InfoF("Request: %s %s", r.Method, r.URL.Path)
 
 		next.ServeHTTP(w, r)
 	})
