@@ -11,7 +11,7 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-func login(writer http.ResponseWriter, request *http.Request) {
+func Login(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		http.Error(writer, "Login requires POST", http.StatusMethodNotAllowed)
 
