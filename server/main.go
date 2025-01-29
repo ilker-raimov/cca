@@ -30,6 +30,7 @@ func initRouter() *mux.Router {
 	router.Handle("/", http.FileServer(http.Dir("./browser")))
 
 	router.HandleFunc("/api/auth/login", auth.Login).Methods("POST")
+	router.HandleFunc("/api/auth/register", auth.Register).Methods("POST")
 
 	return router
 }
