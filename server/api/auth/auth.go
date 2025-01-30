@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/ilker-raimov/cca/log"
 	"github.com/ilker-raimov/cca/storage"
+
+	logger "github.com/sirupsen/logrus"
 )
 
 type LoginRequest struct {
@@ -32,12 +33,12 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	log.InfoF("Email: %s", login.Email)
-	log.InfoF("Password: %s", login.Password)
+	logger.Infof("Email: %s", login.Email)
+	logger.Infof("Password: %s", login.Password)
 
 	storage.GetInstance().Load(login.Email)
 
-	log.Info("Successful login")
+	logger.Info("Successful login")
 }
 
 func Register(writer http.ResponseWriter, request *http.Request) {
@@ -53,20 +54,20 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	log.InfoF("Name: %s", register.Name)
-	log.InfoF("Email: %s", register.Email)
-	log.InfoF("Password: %s", register.Password)
+	logger.Infof("Name: %s", register.Name)
+	logger.Infof("Email: %s", register.Email)
+	logger.Infof("Password: %s", register.Password)
 
 	exists, err := storage.GetInstance().Exists(register.Email)
 
 	if err != nil {
-		log.InfoF("Could not check if key %s exists due to: %s", register.Email, err.Error())
+		logger.Infof("Could not check if key %s exists due to: %s", register.Email, err.Error())
 	}
 
 	if exists {
 		msg := "User with this email already exists."
 
-		log.Info(msg)
+		logger.Info(msg)
 
 		http.Error(writer, msg, http.StatusBadRequest)
 
@@ -75,5 +76,5 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 
 	storage.GetInstance().Save(register.Email, []byte(register.Name))
 
-	log.Info("Successful register")
+	logger.Info("Successful register")
 }

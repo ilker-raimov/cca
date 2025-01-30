@@ -15,13 +15,3 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 func Init() {
 	logrus.SetFormatter(&Formatter{})
 }
-
-func Info(log string) {
-	logrus.Info(log)
-}
-
-func InfoF(format string, parameters ...any) {
-	log := fmt.Sprintf(format, parameters...)
-
-	Info(log)
-}
