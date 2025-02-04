@@ -5,6 +5,8 @@ import (
 
 	"github.com/ilker-raimov/cca/common/log"
 	"github.com/ilker-raimov/cca/primary/router"
+
+	"github.com/sirupsen/logrus"
 )
 
 func Start() {
@@ -12,9 +14,9 @@ func Start() {
 
 	router := router.Init()
 
-	log.Info("Server - starting")
+	logrus.Info("Server - starting")
 
 	http.ListenAndServe("localhost:8080", router)
 
-	log.Info("Server - stopped")
+	logrus.Info("Server - stopped")
 }
