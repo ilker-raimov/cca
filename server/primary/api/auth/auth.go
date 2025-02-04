@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/ilker-raimov/cca/storage"
+	"github.com/ilker-raimov/cca/common/storage"
 
 	logger "github.com/sirupsen/logrus"
 )
