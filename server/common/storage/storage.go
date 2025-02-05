@@ -1,9 +1,9 @@
 package storage
 
-type Storage interface {
-	Save(key string, data []byte) error
-	Load(key string) ([]byte, error)
-	Exists(key string) (bool, error)
-	Delete(key string) error
+type Storage[T any, R any] interface {
+	Save(key T, data R) error
+	Load(key T) (R, error)
+	Exists(key T) (bool, error)
+	Delete(key T) error
 	Close() error
 }

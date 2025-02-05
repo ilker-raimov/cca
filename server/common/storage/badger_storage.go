@@ -6,17 +6,13 @@ import (
 	"github.com/dgraph-io/badger/v4"
 )
 
-type Badger struct {
-	db *badger.DB
-}
-
 var (
-	instance *Badger
-	once     sync.Once
+	badger_instance *Badger
+	badger_once     sync.Once
 )
 
-func GetInstance() *Badger {
-	once.Do(func() {
+func GetBadgerInstance() *Badger {
+	badger_once.Do(func() {
 		opts := badger.DefaultOptions("./.storage_db").WithLoggingLevel(badger.INFO)
 		db_temp, err := badger.Open(opts)
 
@@ -24,10 +20,14 @@ func GetInstance() *Badger {
 			panic(err)
 		}
 
-		instance = &Badger{db: db_temp}
+		badger_instance = &Badger{db: db_temp}
 	})
 
-	return instance
+	return badger_instance
+}
+
+type Badger struct {
+	db *badger.DB
 }
 
 func (b *Badger) Save(key string, data []byte) error {

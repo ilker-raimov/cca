@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ilker-raimov/cca/common/storage"
+	"github.com/ilker-raimov/cca/common/storage/model/user"
 
 	logger "github.com/sirupsen/logrus"
 )
@@ -36,7 +37,32 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 	logger.Infof("Email: %s", login.Email)
 	logger.Infof("Password: %s", login.Password)
 
-	storage.GetInstance().Load(login.Email)
+	key := user.Key(login.Email)
+	exists, err := storage.GetInstance().Exist().Entity(key).NowT()
+
+	if err != nil {
+		http.Error(writer, "Could not check if user exists.", http.StatusInternalServerError)
+
+		return
+	}
+
+	if !exists {
+		http.Error(writer, "No such user.", http.StatusBadRequest)
+
+		return
+	}
+
+	var user user.User
+
+	storage.GetInstance().Load().Entity(&user, key).Now()
+
+	match := user.Password == login.Password
+
+	if !match {
+		http.Error(writer, "Invalid password.", http.StatusBadRequest)
+
+		return
+	}
 
 	logger.Info("Successful login")
 }
@@ -58,7 +84,8 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 	logger.Infof("Email: %s", register.Email)
 	logger.Infof("Password: %s", register.Password)
 
-	exists, err := storage.GetInstance().Exists(register.Email)
+	key := user.Key(register.Email)
+	exists, err := storage.GetInstance().Exist().Entity(key).NowT()
 
 	if err != nil {
 		logger.Infof("Could not check if key %s exists due to: %s", register.Email, err.Error())
@@ -74,7 +101,14 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	storage.GetInstance().Save(register.Email, []byte(register.Name))
+	user := user.New(register.Name, register.Email, register.Password)
+	save_err := storage.GetInstance().Save().Entity(user).Now()
+
+	if save_err != nil {
+		http.Error(writer, "Could not register user.", http.StatusInternalServerError)
+
+		return
+	}
 
 	logger.Info("Successful register")
 }
