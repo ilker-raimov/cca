@@ -1,25 +1,22 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { Router, Route, Link, navigate } from 'svelte-routing';
+	import Router, { push } from "svelte-spa-router";
     import { SvelteToast } from '@zerodevx/svelte-toast'
 
 	import Login from './page/Login.svelte';
 	import Dashboard from './page/Dashboard.svelte';
+	import Task from './page/Task.svelte';
 
-  	onMount(() => {
-		if (window.location.pathname === '/') {
-			navigate('/login');
-		}
-	});
+	const routes = {
+		'/login': Login,
+		'/dashboard': Dashboard,
+		'/task': Task
+	}
+	const token = localStorage.getItem("token");
+	const redirect = token === null ? "/login" : "/dashboard";
+
+	push(redirect);
 </script>
 
-<style>
-	@import 'svelte-notifications/style.css';
-</style>
-
-<Router>
-	<Route path="/login" component={Login} />
-	<Route path="/dashboard" component={Dashboard} />
-</Router>
+<Router {routes}/>
 
 <SvelteToast/>

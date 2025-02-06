@@ -1,26 +1,26 @@
-import { toast, type SvelteToastOptions } from '@zerodevx/svelte-toast'
+import { toast } from '@zerodevx/svelte-toast'
 
 type Theme = { [x: string]: string | number; }
 
 const theme_success: Theme = {
-    '--toastBackground': 'green',
-    '--toastColor': 'white',
-    '--toastBarBackground': 'red'
+    '--toastBackground': '#4CAF50', // Green
+    '--toastColor': '#FFFFFF', // White
+    '--toastBarBackground': '#2E7D32' // Darker Green
 }
 const theme_error: Theme = {
-    '--toastBackground': 'green',
-    '--toastColor': 'white',
-    '--toastBarBackground': 'red'
+    '--toastBackground': '#F44336', // Red
+    '--toastColor': '#FFFFFF', // White
+    '--toastBarBackground': '#B71C1C' // Darker Red
 }
 const theme_info: Theme = {
-    '--toastBackground': 'green',
-    '--toastColor': 'white',
-    '--toastBarBackground': 'red'
+    '--toastBackground': '#E0E0E0', // Light Gray (Whitish)
+    '--toastColor': '#212121', // Dark Gray (Readable)
+    '--toastBarBackground': '#9E9E9E' // Mid Gray
 }
 const theme_warning: Theme = {
-    '--toastBackground': 'green',
-    '--toastColor': 'white',
-    '--toastBarBackground': 'red'
+    '--toastBackground': '#FF9800', // Orange
+    '--toastColor': '#FFFFFF', // White
+    '--toastBarBackground': '#E65100' // Darker Orange
 }
 
 const show = (message: string, theme: Theme) => toast.push(message, { theme: theme});

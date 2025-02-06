@@ -1,12 +1,13 @@
 <script lang="ts">
-    import { navigate } from 'svelte-routing';
+    import { push } from 'svelte-spa-router';
     import { success, warning, error } from '../common/util.ts'
+    import { Button, Form, FormGroup, Label, Input, Container, Card, CardBody, CardTitle } from 'sveltestrap';
 
-    let username: string = "";
+    let email: string = "";
     let password: string = "";
 
     async function handleLogin() {
-        if (!username || !password) {
+        if (!email || !password) {
             error("Username and password are required!")
 
             return;
@@ -21,7 +22,7 @@
 
             // let data = await response.json();
 
-            let ok: bool = username !== "fail" && password !== "fail";
+            let ok: boolean = email !== "fail" && password !== "fail";
             let data: any = {
                 token: "ahahha"
             }
@@ -30,7 +31,7 @@
                 localStorage.setItem("token", data.token);
 
                 success('Successful login!');
-                navigate("/dashboard")
+                push("/dashboard")
             } else {
                 warning('Invalid credentials!');
             }
@@ -40,10 +41,29 @@
     }
 </script>
 
-<h2>Login</h2>
+<Container class="d-flex justify-content-center align-items-center vh-100">
+    <Card class="p-4 shadow-lg" style="max-width: 400px; width: 100%;">
+        <CardBody>
+            <CardTitle class="text-center mb-4">
+                <h2>Login</h2>
+            </CardTitle>
 
-<input type="text" placeholder="Username" bind:value={username} />
-<input type="password" placeholder="Password" bind:value={password} />
+            <Form>
+                <FormGroup>
+                    <Label for="email">Email</Label>
 
-<button on:click={handleLogin}>Login</button>
+                    <Input type="email" id="email" placeholder="Enter email" bind:value={email} />
+                </FormGroup>
+
+                <FormGroup>
+                    <Label for="password">Password</Label>
+
+                    <Input type="password" id="password" placeholder="Enter password" bind:value={password} />
+                </FormGroup>
+
+                <Button color="primary" block on:click={handleLogin}>Login</Button>
+            </Form>
+        </CardBody>
+    </Card>
+</Container>
   

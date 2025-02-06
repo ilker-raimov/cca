@@ -15,6 +15,7 @@
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.0.0",
     "@tsconfig/svelte": "^5.0.4",
+    "@zerodevx/svelte-toast": "^0.9.6",
     "rollup": "^3.15.0",
     "rollup-plugin-css-only": "^4.3.0",
     "rollup-plugin-livereload": "^2.0.0",
@@ -26,10 +27,11 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@zerodevx/svelte-toast": "^0.9.6",
     "bootstrap": "^5.3.3",
+    "brace": "^0.11.1",
     "sirv-cli": "^2.0.0",
-    "svelte-routing": "^2.13.0",
+    "svelte-ace": "^1.0.21",
+    "svelte-spa-router": "^4.0.1",
     "sveltestrap": "^5.11.3"
   }
 }
