@@ -11,15 +11,21 @@ import (
 type Language int
 
 const (
-	JAVA_17 Language = iota
+	JAVA_8 Language = iota
+	JAVA_11
+	JAVA_17
 	JAVA_21
-	GO_120
-	CPP_14
-	CPP_20
 )
 
+var stringToLanguage = map[string]Language{
+	"JAVA_8":  JAVA_8,
+	"JAVA_11": JAVA_11,
+	"JAVA_17": JAVA_17,
+	"JAVA_21": JAVA_21,
+}
+
 func (l Language) String() string {
-	return [...]string{"JAVA_17", "JAVA_21", "CPP_9", "CPP_11"}[l]
+	return [...]string{"JAVA_8", "JAVA_11", "JAVA_17", "JAVA_21"}[l]
 }
 
 func (l Language) GetName() string {
@@ -39,17 +45,22 @@ func Build(language Language, cmd string) string {
 	var from string
 
 	switch language {
+	case JAVA_8:
+		from = "openjdk:8"
+	case JAVA_11:
+		from = "openjdk:11"
 	case JAVA_17:
 		from = "openjdk:17"
 	case JAVA_21:
 		from = "openjdk:21"
-	case GO_120:
-		from = "golang:1.20"
-	case CPP_14:
-		from = "gcc:14"
-	case CPP_20:
-		from = "gcc:17"
 	}
 
 	return fmt.Sprintf("FROM %s\nCMD [\"./%s\"]", from, cmd)
+}
+
+func From(value string) Language {
+	upper_value := strings.ToUpper(value)
+	language := stringToLanguage[upper_value]
+
+	return language
 }

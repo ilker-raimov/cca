@@ -17,8 +17,6 @@ func main() {
 
 	router.Use(interceptor.LogInterceptor)
 
-	router.Handle("/", http.FileServer(http.Dir("./browser")))
-
 	router.HandleFunc("/api/run/compile", run.Compile).Methods("POST")
 
 	logrus.Info("Server - starting")
