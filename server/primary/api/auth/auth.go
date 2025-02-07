@@ -7,6 +7,7 @@ import (
 	"github.com/ilker-raimov/cca/common/storage"
 	"github.com/ilker-raimov/cca/common/storage/model/user"
 	"github.com/ilker-raimov/cca/primary/jwt"
+	"github.com/ilker-raimov/cca/primary/util/regex"
 
 	logger "github.com/sirupsen/logrus"
 )
@@ -21,7 +22,7 @@ type LoginResponse struct {
 }
 
 type RegisterRequest struct {
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -106,7 +107,7 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	logger.Infof("Name: %s", register.Name)
+	logger.Infof("Username: %s", register.Username)
 	logger.Infof("Email: %s", register.Email)
 	logger.Infof("Password: %s", register.Password)
 
@@ -127,7 +128,23 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	user := user.New(register.Name, register.Email, register.Password)
+	is_email_valid := regex.Email(register.Email)
+
+	if !is_email_valid {
+		http.Error(writer, "Invalid email.", http.StatusBadRequest)
+
+		return
+	}
+
+	is_password_valid := regex.Password(register.Password)
+
+	if !is_password_valid {
+		http.Error(writer, "Invalid password. It must contain 1 capital letter, 1 digit, 1 special symbol and be atleast 8 symbols.", http.StatusBadRequest)
+
+		return
+	}
+
+	user := user.New(register.Username, register.Email, register.Password)
 	save_err := storage.GetInstance().Save().Entity(user).Now()
 
 	if save_err != nil {

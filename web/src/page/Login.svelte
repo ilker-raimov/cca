@@ -1,37 +1,40 @@
 <script lang="ts">
-    import { push } from 'svelte-spa-router';
-    import { success, warning, error } from '../common/util.ts'
+    import { push, replace } from 'svelte-spa-router';
+    import { success, warning, error, check_or_warning } from '../common/util.ts'
     import { Button, Form, FormGroup, Label, Input, Container, Card, CardBody, CardTitle } from 'sveltestrap';
 
     let email: string = "";
     let password: string = "";
 
     async function handleLogin() {
-        if (!email || !password) {
-            error("Username and password are required!")
+        let check_email: boolean = check_or_warning(email, "Email is required!");
+        let check_password: boolean = check_or_warning(password, "Password is required!");
 
+        if (check_email || check_password) {
             return;
         }
 
         try {
-            let response = await fetch("http://localhost:8081/api/auth/login", {
+            let response = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             });
 
-            let data = await response.json();
-
             if (response.ok) {
+                let data = await response.json();
+
                 localStorage.setItem("token", data.token);
 
                 success('Successful login!');
                 push("/dashboard")
             } else {
-                warning('Invalid credentials!');
+                let data = await response.text();
+
+                warning(data);
             }
-        } catch (err) {
-            error('Error validating the credentials!');
+        } catch (err: any) {
+            error(err);
         }
     }
 </script>
@@ -57,6 +60,7 @@
                 </FormGroup>
 
                 <Button color="primary" block on:click={handleLogin}>Login</Button>
+                <Button color="secondary" block on:click={() => push("/register")}>Don't have an account?</Button>
             </Form>
         </CardBody>
     </Card>

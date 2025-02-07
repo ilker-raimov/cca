@@ -3,11 +3,13 @@
     import { SvelteToast } from '@zerodevx/svelte-toast'
 
 	import Login from './page/Login.svelte';
+    import Register from './page/Register.svelte';
 	import Dashboard from './page/Dashboard.svelte';
 	import Task from './page/Task.svelte';
 
 	const routes = {
 		'/login': Login,
+        '/register': Register,
 		'/dashboard': Dashboard,
 		'/task': Task
 	}

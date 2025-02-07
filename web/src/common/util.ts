@@ -29,3 +29,18 @@ export const success = (message: string) => show(message, theme_success);
 export const error = (message: string) => show(message, theme_error);
 export const info = (message: string) => show(message, theme_info);
 export const warning = (message: string) => show(message, theme_warning);
+
+function check_or_consumer(value: any, message: string, consumer: (message: string) => void): boolean {
+    if (!value) {
+        consumer(message);
+
+        return true;
+    }
+
+    return false;
+}
+
+export const check_or_success = (value: any, message: string) => check_or_consumer(value, message, success);
+export const check_or_error = (value: any, message: string) => check_or_consumer(value, message, error);
+export const check_or_warning = (value: any, message: string) => check_or_consumer(value, message, warning);
+export const check_or_info = (value: any, message: string) => check_or_consumer(value, message, info);
