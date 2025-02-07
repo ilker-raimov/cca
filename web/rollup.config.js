@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import html from '@rollup/plugin-html';
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
@@ -34,28 +35,19 @@ function serve() {
 export default {
 	input: 'src/main.ts',
 	output: {
+		dir: "../server/browser",
 		sourcemap: true,
 		format: 'iife',
 		name: 'app',
-		file: 'public/build/bundle.js'
 	},
 	plugins: [
 		svelte({
 			preprocess: sveltePreprocess({ sourceMap: !production }),
 			compilerOptions: {
-				// enable run-time checks when not in production
 				dev: !production
 			}
 		}),
-		// we'll extract any component CSS out into
-		// a separate file - better for performance
-		css({ output: 'bundle.css' }),
-
-		// If you have external dependencies installed from
-		// npm, you'll most likely need these plugins. In
-		// some cases you'll need additional configuration -
-		// consult the documentation for details:
-		// https://github.com/rollup/plugins/tree/master/packages/commonjs
+		css({ output: 'main.css' }),
 		resolve({
 			browser: true,
 			dedupe: ['svelte'],
@@ -66,17 +58,20 @@ export default {
 			sourceMap: !production,
 			inlineSources: !production
 		}),
+		html({
+			inject: {
+			  inject: {
+				injectScript: 'main.js',
+				injectStyle: 'main.css',
+			  },
+			},
+			title: "CCA",
+		}),
 
-		// In dev mode, call `npm run start` once
-		// the bundle has been generated
 		!production && serve(),
 
-		// Watch the `public` directory and refresh the
-		// browser on changes when not in production
 		!production && livereload('public'),
 
-		// If we're building for production (npm run build
-		// instead of npm run dev), minify
 		production && terser()
 	],
 	watch: {

@@ -14,20 +14,15 @@
         }
 
         try {
-            // let response = await fetch("http://localhost:8081/api/auth/login", {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify({ username, password })
-            // });
+            let response = await fetch("http://localhost:8081/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
 
-            // let data = await response.json();
+            let data = await response.json();
 
-            let ok: boolean = email !== "fail" && password !== "fail";
-            let data: any = {
-                token: "ahahha"
-            }
-
-            if (ok) {
+            if (response.ok) {
                 localStorage.setItem("token", data.token);
 
                 success('Successful login!');
