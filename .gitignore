@@ -27,4 +27,4 @@ go.work.sum
 # git
 
 # angular
-server/static/**
+server/browser/**

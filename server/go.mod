@@ -6,6 +6,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgraph-io/badger/v4 v4.5.1 // indirect
 	github.com/dgraph-io/ristretto/v2 v2.1.0 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/google/flatbuffers v24.12.23+incompatible // indirect

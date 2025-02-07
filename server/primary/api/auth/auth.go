@@ -6,6 +6,7 @@ import (
 
 	"github.com/ilker-raimov/cca/common/storage"
 	"github.com/ilker-raimov/cca/common/storage/model/user"
+	"github.com/ilker-raimov/cca/primary/jwt"
 
 	logger "github.com/sirupsen/logrus"
 )
@@ -13,6 +14,10 @@ import (
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
 }
 
 type RegisterRequest struct {
@@ -65,6 +70,27 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	logger.Info("Successful login")
+
+	token, err := jwt.Create(user.Email)
+
+	if err != nil {
+		http.Error(writer, "Could not create JWT.", http.StatusInternalServerError)
+
+		return
+	}
+
+	response := LoginResponse{
+		Token: token,
+	}
+	response_data, err := json.Marshal(response)
+
+	if err != nil {
+		http.Error(writer, "Could not map JWT.", http.StatusInternalServerError)
+
+		return
+	}
+
+	writer.Write(response_data)
 }
 
 func Register(writer http.ResponseWriter, request *http.Request) {
