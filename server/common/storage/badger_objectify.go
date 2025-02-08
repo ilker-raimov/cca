@@ -3,6 +3,8 @@ package storage
 import (
 	"encoding/json"
 	"sync"
+
+	"github.com/ilker-raimov/cca/common/storage/model/user"
 )
 
 var (
@@ -13,9 +15,17 @@ var (
 func GetInstance() *BadgerObjectify {
 	once.Do(func() {
 		instance = &BadgerObjectify{badger: GetBadgerInstance()}
+
+		setup(instance)
 	})
 
 	return instance
+}
+
+func setup(bo *BadgerObjectify) {
+	user := user.Admin()
+
+	bo.Save().Entity(user).Now()
 }
 
 type BadgerSaveObjectify struct {

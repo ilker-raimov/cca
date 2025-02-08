@@ -24,7 +24,8 @@ go.work.sum
 # env file
 .env
 
-# git
+# storage
+server/.storage_db/**
 
 # angular
 server/browser/**

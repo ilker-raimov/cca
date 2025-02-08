@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/dgraph-io/badger/v4"
+	"github.com/ilker-raimov/cca/common/util/file"
 )
 
 var (
@@ -11,9 +12,15 @@ var (
 	badger_once     sync.Once
 )
 
+const (
+	STORAGE_PATH = ".storage_db"
+)
+
 func GetBadgerInstance() *Badger {
 	badger_once.Do(func() {
-		opts := badger.DefaultOptions("./.storage_db").WithLoggingLevel(badger.INFO)
+		cleanup()
+
+		opts := badger.DefaultOptions(STORAGE_PATH).WithLoggingLevel(badger.INFO)
 		db_temp, err := badger.Open(opts)
 
 		if err != nil {
@@ -24,6 +31,22 @@ func GetBadgerInstance() *Badger {
 	})
 
 	return badger_instance
+}
+
+func cleanup() {
+	storage_exists := file.Exists(STORAGE_PATH)
+
+	if !storage_exists {
+		return
+	}
+
+	err := file.DeleteAll(STORAGE_PATH)
+
+	if err == nil {
+		return
+	}
+
+	panic(err)
 }
 
 type Badger struct {

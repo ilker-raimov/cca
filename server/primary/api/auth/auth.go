@@ -60,7 +60,13 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 
 	var user user.User
 
-	storage.GetInstance().Load().Entity(&user, key).Now()
+	load_err := storage.GetInstance().Load().Entity(&user, key).Now()
+
+	if load_err != nil {
+		http.Error(writer, "Could not load user.", http.StatusInternalServerError)
+
+		return
+	}
 
 	match := user.Password == login.Password
 
