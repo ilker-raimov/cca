@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { push, replace } from 'svelte-spa-router';
-    import { success, warning, error, check_or_warning } from '../common/util.ts'
+    import { push } from 'svelte-spa-router';
+    import { success, warning, error, check_or_warning } from '../common/toast.ts'
     import { Button, Form, FormGroup, Label, Input, Container, Card, CardBody, CardTitle, Row } from 'sveltestrap';
 
     let email: string = "";
@@ -31,18 +31,20 @@
                 body: JSON.stringify({ email, username, password })
             });
 
-            if (response.ok) {
-                let data = await response.json();
-
-                localStorage.setItem("token", data.token);
-
-                success('Successful register!');
-                push("/login")
-            } else {
+            if (!response.ok) {
                 let data = await response.text();
 
                 warning(data);
+
+                return;
             }
+
+            let data = await response.json();
+
+            localStorage.setItem("token", data.token);
+
+            success('Successful register!');
+            push("/login")
         } catch (err: any) {
             error(err);
         }
@@ -83,7 +85,7 @@
             </Form>
 
             <Button color="primary" block on:click={handleRegister}>Register</Button>
-            <Button color="secondary" block on:click={() => replace("/login")}>Already have an account?</Button>
+            <Button color="link" block on:click={() => push("/login")}>Already have an account?</Button>
         </CardBody>
     </Card>
 </Container>

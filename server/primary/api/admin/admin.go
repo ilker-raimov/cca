@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/ilker-raimov/cca/common/storage"
-	"github.com/ilker-raimov/cca/common/storage/model/user"
+	"github.com/ilker-raimov/cca/common/storage/model/model_user"
 	logger "github.com/sirupsen/logrus"
 )
 
 type PromoteRequest struct {
-	Email string    `json:"email"`
-	Role  user.Role `json:"role"`
+	Email string          `json:"email"`
+	Role  model_user.Role `json:"role"`
 }
 
 func Promote(writer http.ResponseWriter, request *http.Request) {
@@ -30,7 +30,7 @@ func Promote(writer http.ResponseWriter, request *http.Request) {
 	logger.Infof("Email: %s", promote.Email)
 	logger.Infof("Role: %v", promote.Role)
 
-	key := user.Key(promote.Email)
+	key := model_user.Key(promote.Email)
 	exists, err := storage.GetInstance().Exist().Entity(key).NowT()
 
 	if err != nil {
@@ -45,7 +45,7 @@ func Promote(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	var user user.User
+	var user model_user.User
 
 	load_err := storage.GetInstance().Load().Entity(&user, key).Now()
 

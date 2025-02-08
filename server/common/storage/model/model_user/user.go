@@ -1,4 +1,4 @@
-package user
+package model_user
 
 import (
 	"fmt"
@@ -19,6 +19,12 @@ const (
 	COMPETITOR Role = iota
 	ORGANIZER
 	ADMINISTRATOR
+)
+
+const (
+	COULD_NOT_CHECK = "Could not check if user exists."
+	NO_SUCH_USER    = "No such user."
+	COULD_NOT_LOAD  = "Could not load user."
 )
 
 func (u *User) Key() string {

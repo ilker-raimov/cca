@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/ilker-raimov/cca/common/storage/model/user"
+	"github.com/ilker-raimov/cca/common/storage/model/model_user"
 )
 
 var (
@@ -23,7 +23,7 @@ func GetInstance() *BadgerObjectify {
 }
 
 func setup(bo *BadgerObjectify) {
-	user := user.Admin()
+	user := model_user.Admin()
 
 	bo.Save().Entity(user).Now()
 }

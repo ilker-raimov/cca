@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ilker-raimov/cca/common/storage"
-	"github.com/ilker-raimov/cca/common/storage/model/user"
+	"github.com/ilker-raimov/cca/common/storage/model/model_user"
 	"github.com/ilker-raimov/cca/primary/jwt"
 	"github.com/ilker-raimov/cca/primary/util/regex"
 
@@ -43,27 +43,27 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 	logger.Infof("Email: %s", login.Email)
 	logger.Infof("Password: %s", login.Password)
 
-	key := user.Key(login.Email)
+	key := model_user.Key(login.Email)
 	exists, err := storage.GetInstance().Exist().Entity(key).NowT()
 
 	if err != nil {
-		http.Error(writer, "Could not check if user exists.", http.StatusInternalServerError)
+		http.Error(writer, model_user.COULD_NOT_CHECK, http.StatusInternalServerError)
 
 		return
 	}
 
 	if !exists {
-		http.Error(writer, "No such user.", http.StatusBadRequest)
+		http.Error(writer, model_user.NO_SUCH_USER, http.StatusBadRequest)
 
 		return
 	}
 
-	var user user.User
+	var user model_user.User
 
 	load_err := storage.GetInstance().Load().Entity(&user, key).Now()
 
 	if load_err != nil {
-		http.Error(writer, "Could not load user.", http.StatusInternalServerError)
+		http.Error(writer, model_user.COULD_NOT_LOAD, http.StatusInternalServerError)
 
 		return
 	}
@@ -78,7 +78,7 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 
 	logger.Info("Successful login")
 
-	token, err := jwt.Create(user.Email)
+	token, err := jwt.Create(user.Email, user.Role)
 
 	if err != nil {
 		http.Error(writer, "Could not create JWT.", http.StatusInternalServerError)
@@ -117,7 +117,7 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 	logger.Infof("Email: %s", register.Email)
 	logger.Infof("Password: %s", register.Password)
 
-	key := user.Key(register.Email)
+	key := model_user.Key(register.Email)
 	exists, err := storage.GetInstance().Exist().Entity(key).NowT()
 
 	if err != nil {
@@ -150,7 +150,7 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	user := user.New(register.Username, register.Email, register.Password)
+	user := model_user.New(register.Username, register.Email, register.Password)
 	save_err := storage.GetInstance().Save().Entity(user).Now()
 
 	if save_err != nil {
