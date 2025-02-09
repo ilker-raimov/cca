@@ -3,6 +3,11 @@
     import { error, warning } from "../common/toast";
     import { push } from "svelte-spa-router";
     import { check_token_or_login } from "../common/util";
+    
+    // export let params: any;
+
+    // const competition_id: string = params.id;
+    // const is_edit: boolean = competition_id !== null && competition_id !== undefined
 
     type Competition = {
         title: string;
@@ -100,7 +105,7 @@
                 <FormGroup>
                     <Label id="public_label" for="public">Is public?</Label>
                     <Tooltip target="public_label" placement="right">Sets whether the competition is visible to everyone.</Tooltip>
-                    <Input type="checkbox" id="public" bind:value={competition.public}/>
+                    <Input type="checkbox" id="public" bind:checked={competition.public}/>
                 </FormGroup>
         
                 <FormGroup>
@@ -120,11 +125,11 @@
                 <FormGroup>
                     <Label id="use_overall_time_label" for="use_overall_time">Use overall time?</Label>
                     <Tooltip target="use_overall_time_label" placement="top">Takes into account overall passed time of the competition when scoring the results.</Tooltip>
-                    <Input type="checkbox" id="use_overall_time" bind:value={competition.use_overall_time}/>
+                    <Input type="checkbox" id="use_overall_time" bind:checked={competition.use_overall_time}/>
 
                     <Label id="use_execution_time_label" for="use_execution_time">Use execution time?</Label>
                     <Tooltip target="use_execution_time_label" placement="right">Takes into account execution time of the submission when scoring the results.</Tooltip>
-                    <Input type="checkbox" id="use_execution_time" bind:value={competition.use_execution_time}/>
+                    <Input type="checkbox" id="use_execution_time" bind:checked={competition.use_execution_time}/>
                 
                 </FormGroup>
             </Form>

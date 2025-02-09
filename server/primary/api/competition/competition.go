@@ -96,7 +96,7 @@ func Create(writer http.ResponseWriter, request *http.Request) {
 	logger.Infof("Description: %s", create.Description)
 	logger.Infof("Language: %s", create.Language.String())
 
-	competition := model_competition.New(create.Title, create.Description, create.Language)
+	competition := model_competition.New(create.Title, create.Public, create.Description, create.Language, create.UseOverallTime, create.UseExecutionTime)
 
 	logger.Infof("Created competition: %v", competition)
 

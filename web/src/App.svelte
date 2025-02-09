@@ -8,6 +8,8 @@
 	import Dashboard from './page/Dashboard.svelte';
     import CreateCompetition from './page/CreateCompetition.svelte';
 	import Task from './page/Task.svelte';
+    import ViewCompetition from "./page/ViewCompetition.svelte";
+    import CreateTask from "./page/CreateTask.svelte";
 
 	const routes = {
         '/': Welcome,
@@ -15,6 +17,8 @@
         '/register': Register,
 		'/dashboard': Dashboard,
         '/competitions/create': CreateCompetition,
+        '/competitions/:id/view': ViewCompetition,
+        '/competitions/:id/tasks/create': CreateTask,
 		'/task': Task
 	}
 </script>

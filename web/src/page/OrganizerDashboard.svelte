@@ -3,16 +3,7 @@
     import { Table, Button, Badge, Container } from "sveltestrap";
     import { check_token_or_login } from "../common/util";
     import { error, warning } from "../common/toast";
-
-    type Competition = {
-        id: string;
-        title: string;
-        public: boolean;
-        description: string;
-        language: number;
-        use_overall_time: boolean;
-        use_execution_time: boolean;
-    };
+    import { getCompetition, getCompetitionIdList, type Competition } from "../common/competition";
 
     let loading = true;
     let languages: string[] = [];
@@ -35,50 +26,6 @@
             error(err)
 
             return [];
-        }
-    }
-
-    async function getCompetitionIdList(token: string): Promise<string[]> {
-        try {
-            const response: Response = await fetch("/api/competitions?all", {
-                headers: { "Authorization": token }
-            });
-
-            if (!response.ok) {
-                let data: string = await response.text();
-
-                warning(data);
-
-                return [];
-            }
-
-            return await response.json();
-        } catch(err: any) {
-            error(err);
-
-            return [];
-        }
-    }
-
-    async function getCompetition(id: string, token: string): Promise<Competition | null> {
-        try {
-            const response: Response = await fetch(`/api/competitions/${id}`, {
-                headers: { "Authorization": token }
-            });
-
-            if (!response.ok) {
-                let data: string = await response.text();
-
-                warning(data);
-
-                return null;
-            }
-
-            return await response.json();
-        } catch(err: any) {
-            error(err);
-
-            return null;
         }
     }
 

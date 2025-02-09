@@ -9,11 +9,13 @@ import (
 )
 
 type Competition struct {
-	Id          string         `json:"id"`
-	Public      bool           `json:"public"`
-	Title       string         `json:"title"`
-	Description string         `json:"description"`
-	Language    setup.Language `json:"language"`
+	Id               string         `json:"id"`
+	Public           bool           `json:"public"`
+	Title            string         `json:"title"`
+	Description      string         `json:"description"`
+	Language         setup.Language `json:"language"`
+	UseOverallTime   bool           `json:"use_overall_time"`
+	UseExecutionTime bool           `json:"use_execution_time"`
 }
 
 type CompetitionsUser struct {
@@ -65,10 +67,10 @@ func KeyAll() string {
 	return "storage.model.competitions"
 }
 
-func New(title string, description string, language setup.Language) *Competition {
+func New(title string, public bool, description string, language setup.Language, use_overall_time bool, use_execution_time bool) *Competition {
 	id := uuid.New().String()
 
-	return new(id, title, description, language)
+	return new(id, public, title, description, language, use_overall_time, use_overall_time)
 }
 
 func NewUser(email string) *CompetitionsUser {
@@ -79,12 +81,15 @@ func NewAll() *Competitions {
 	return newAll([]string{})
 }
 
-func new(id string, title string, description string, language setup.Language) *Competition {
+func new(id string, public bool, title string, description string, language setup.Language, use_overall_time bool, use_execution_time bool) *Competition {
 	return &Competition{
-		Id:          id,
-		Title:       title,
-		Description: description,
-		Language:    language,
+		Id:               id,
+		Public:           public,
+		Title:            title,
+		Description:      description,
+		Language:         language,
+		UseOverallTime:   use_overall_time,
+		UseExecutionTime: use_execution_time,
 	}
 }
 
