@@ -27,6 +27,13 @@ const (
 	COULD_NOT_LOAD  = "Could not load user."
 )
 
+func Roles() map[int]string {
+	return map[int]string{
+		0: "COMPETITOR",
+		1: "ORGANIZER",
+		2: "ADMINISTRATOR"}
+}
+
 func (u *User) Key() string {
 	return Key(u.Email)
 }
@@ -36,12 +43,23 @@ func Key(email string) string {
 }
 
 func New(username string, email string, password string) *User {
-	return &User{
-		Username: username,
-		Email:    email,
-		Password: password,
-		Role:     COMPETITOR,
-	}
+	return new(username, email, password, COMPETITOR)
+}
+
+func Competitor() *User {
+	username := environment.GetOrDefault("competitor.username", "competitor")
+	email := environment.GetOrDefault("competitor.email", "competitor@test.bg")
+	password := environment.GetOrDefault("competitor.password", "Test123!")
+
+	return new(username, email, password, COMPETITOR)
+}
+
+func Organizer() *User {
+	username := environment.GetOrDefault("organizer.username", "organizer")
+	email := environment.GetOrDefault("organizer.email", "organizer@test.bg")
+	password := environment.GetOrDefault("organizer.password", "Test123!")
+
+	return new(username, email, password, ORGANIZER)
 }
 
 func Admin() *User {
@@ -49,10 +67,14 @@ func Admin() *User {
 	email := environment.GetOrDefault("admin.email", "admin@test.bg")
 	password := environment.GetOrDefault("admin.password", "Test123!")
 
+	return new(username, email, password, ADMINISTRATOR)
+}
+
+func new(username string, email string, password string, role Role) *User {
 	return &User{
 		Username: username,
 		Email:    email,
 		Password: password,
-		Role:     ADMINISTRATOR,
+		Role:     role,
 	}
 }

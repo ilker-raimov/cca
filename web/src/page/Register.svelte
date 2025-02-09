@@ -41,7 +41,7 @@
 
             let data = await response.json();
 
-            localStorage.setItem("token", data.token);
+            sessionStorage.setItem("token", data.token);
 
             success('Successful register!');
             push("/login")

@@ -1,6 +1,12 @@
 <script lang="ts">
     import { push } from "svelte-spa-router";
     import { Container, Card, CardBody, CardTitle, Button } from "sveltestrap";
+
+    let token_present: boolean = sessionStorage.getItem("token") !== null;
+
+    if (token_present) {
+        push("/dashboard")
+    }
 </script>
 
 <Container class="d-flex justify-content-center align-items-center vh-100">

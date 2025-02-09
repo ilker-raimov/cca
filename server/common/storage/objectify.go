@@ -24,9 +24,14 @@ type ExistObjectify[T any] interface {
 	Entity(id T) *ExistObjectify[T]
 }
 
-type Objectify[T any, L LoadObjectify[T], S SaveObjectify[T], E ExistObjectify[T]] interface {
+type LoadOrCreateObjectify[T any] interface {
+	Entity(object Objectifiable[T], id T, fallback Objectifiable[T]) *LoadObjectify[T]
+}
+
+type Objectify[T any, L LoadObjectify[T], S SaveObjectify[T], E ExistObjectify[T], LC LoadOrCreateObjectify[T]] interface {
 	Save() *S
 	Load() *L
 	Exist() *E
+	LoadOrCreate() *LC
 	// Delete(id T) error
 }

@@ -31,7 +31,10 @@
 
             let data = await response.json();
 
-            localStorage.setItem("token", data.token);
+            sessionStorage.setItem("username", data.username)
+            sessionStorage.setItem("email", data.email)
+            sessionStorage.setItem("role", data.role)
+            sessionStorage.setItem("token", data.token);
 
             success('Successful login!');
             push("/dashboard")

@@ -23,9 +23,13 @@ func GetInstance() *BadgerObjectify {
 }
 
 func setup(bo *BadgerObjectify) {
-	user := model_user.Admin()
+	competitor := model_user.Competitor()
+	organizer := model_user.Organizer()
+	admin := model_user.Admin()
 
-	bo.Save().Entity(user).Now()
+	bo.Save().Entity(competitor).Now()
+	bo.Save().Entity(organizer).Now()
+	bo.Save().Entity(admin).Now()
 }
 
 type BadgerSaveObjectify struct {
@@ -77,6 +81,43 @@ func (blo *BadgerLoadObjectify) Now() error {
 	return blo.action()
 }
 
+type BadgerLoadOrCreateObjectify struct {
+	bo     *BadgerObjectify
+	action func() error
+}
+
+func (blco *BadgerLoadOrCreateObjectify) Entity(object Objectifiable[string], id string, fallback Objectifiable[string]) *BadgerLoadOrCreateObjectify {
+	return &BadgerLoadOrCreateObjectify{
+		bo: blco.bo,
+		action: func() error {
+			exists, exist_err := blco.bo.badger.Exists(id)
+
+			if exist_err != nil {
+				return exist_err
+			}
+
+			var data []byte
+			var err error
+
+			if !exists {
+				data, err = json.Marshal(fallback)
+			} else {
+				data, err = blco.bo.badger.Load(id)
+			}
+
+			if err != nil {
+				return err
+			}
+
+			return json.Unmarshal(data, object)
+		},
+	}
+}
+
+func (blco *BadgerLoadOrCreateObjectify) Now() error {
+	return blco.action()
+}
+
 type BadgerExistObjectify struct {
 	bo     *BadgerObjectify
 	action func() (bool, error)
@@ -113,6 +154,12 @@ func (bo *BadgerObjectify) Load() *BadgerLoadObjectify {
 
 func (bo *BadgerObjectify) Exist() *BadgerExistObjectify {
 	return &BadgerExistObjectify{
+		bo: bo,
+	}
+}
+
+func (bo *BadgerObjectify) LoadOrCreate() *BadgerLoadOrCreateObjectify {
+	return &BadgerLoadOrCreateObjectify{
 		bo: bo,
 	}
 }

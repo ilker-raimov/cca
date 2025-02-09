@@ -1,11 +1,11 @@
 package auth
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/ilker-raimov/cca/common/storage"
 	"github.com/ilker-raimov/cca/common/storage/model/model_user"
+	"github.com/ilker-raimov/cca/common/util/response"
 	"github.com/ilker-raimov/cca/primary/jwt"
 	"github.com/ilker-raimov/cca/primary/util/regex"
 
@@ -18,7 +18,10 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
+	Username string          `json:"username"`
+	Email    string          `json:"email"`
+	Role     model_user.Role `json:"role"`
+	Token    string          `json:"token"`
 }
 
 type RegisterRequest struct {
@@ -32,11 +35,9 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 
 	var login LoginRequest
 
-	decoder := json.NewDecoder(request.Body)
+	is_parse_ok := response.ParseOrInternal(writer, request.Body, &login)
 
-	if err := decoder.Decode(&login); err != nil {
-		http.Error(writer, "Invalid request format.", http.StatusBadRequest)
-
+	if !is_parse_ok {
 		return
 	}
 
@@ -47,13 +48,13 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 	exists, err := storage.GetInstance().Exist().Entity(key).NowT()
 
 	if err != nil {
-		http.Error(writer, model_user.COULD_NOT_CHECK, http.StatusInternalServerError)
+		response.InternalServerError(writer, model_user.COULD_NOT_CHECK)
 
 		return
 	}
 
 	if !exists {
-		http.Error(writer, model_user.NO_SUCH_USER, http.StatusBadRequest)
+		response.BadRequest(writer, model_user.NO_SUCH_USER)
 
 		return
 	}
@@ -63,7 +64,7 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 	load_err := storage.GetInstance().Load().Entity(&user, key).Now()
 
 	if load_err != nil {
-		http.Error(writer, model_user.COULD_NOT_LOAD, http.StatusInternalServerError)
+		response.InternalServerError(writer, model_user.COULD_NOT_LOAD)
 
 		return
 	}
@@ -71,33 +72,28 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 	match := user.Password == login.Password
 
 	if !match {
-		http.Error(writer, "Invalid password.", http.StatusBadRequest)
+		response.BadRequest(writer, "Invalid password.")
 
 		return
 	}
-
-	logger.Info("Successful login")
 
 	token, err := jwt.Create(user.Email, user.Role)
 
 	if err != nil {
-		http.Error(writer, "Could not create JWT.", http.StatusInternalServerError)
+		response.InternalServerError(writer, "Could not create JWT.")
 
 		return
 	}
 
-	response := LoginResponse{
-		Token: token,
-	}
-	response_data, err := json.Marshal(response)
-
-	if err != nil {
-		http.Error(writer, "Could not map JWT.", http.StatusInternalServerError)
-
-		return
+	login_response := LoginResponse{
+		Username: user.Username,
+		Email:    user.Email,
+		Role:     user.Role,
+		Token:    token,
 	}
 
-	writer.Write(response_data)
+	response.WriteOrInternal(writer, login_response)
+	logger.Info("Successful login")
 }
 
 func Register(writer http.ResponseWriter, request *http.Request) {
@@ -105,11 +101,9 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 
 	var register RegisterRequest
 
-	decoder := json.NewDecoder(request.Body)
+	is_parse_ok := response.ParseOrInternal(writer, request.Body, &register)
 
-	if err := decoder.Decode(&register); err != nil {
-		http.Error(writer, "Invalid request format.", http.StatusBadRequest)
-
+	if !is_parse_ok {
 		return
 	}
 

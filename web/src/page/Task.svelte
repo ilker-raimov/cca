@@ -23,7 +23,7 @@
       console.log("Submitting code...");
     }
   </script>
-  
+  <!-- REWORK NOT TO USE CARD -->
   <Container fluid class="vh-100">
     <Row class="h-100">
         <Col md="5" class="border-right p-4 overflow-auto">

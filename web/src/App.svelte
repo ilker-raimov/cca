@@ -6,17 +6,17 @@
 	import Login from './page/Login.svelte';
     import Register from './page/Register.svelte';
 	import Dashboard from './page/Dashboard.svelte';
+    import CreateCompetition from './page/CreateCompetition.svelte';
 	import Task from './page/Task.svelte';
 
 	const routes = {
-        '/welcome': Welcome,
+        '/': Welcome,
 		'/login': Login,
         '/register': Register,
 		'/dashboard': Dashboard,
+        '/competitions/create': CreateCompetition,
 		'/task': Task
 	}
-
-	push("/welcome");
 </script>
 
 <Router {routes}/>

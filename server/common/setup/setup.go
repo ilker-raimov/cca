@@ -41,6 +41,10 @@ func (l Language) GetVersion() (int, error) {
 	return strconv.Atoi(version)
 }
 
+func All() []string {
+	return []string{JAVA_8.String(), JAVA_11.String(), JAVA_17.String(), JAVA_21.String()}
+}
+
 func Build(language Language, cmd string) string {
 	var from string
 

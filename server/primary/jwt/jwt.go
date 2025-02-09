@@ -13,7 +13,7 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-var sign_key = []byte(environment.GetOrDefault("jwt.sign.key", "MzgzYjFiM2UtNmE0Zi00ZTBhLTliZTgtNzAyYWMxNGEwYmI2")) //switch to getOrPanic
+var sign_key = []byte(environment.GetOrDefault("jwt.sign.key", "2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D")) //switch to getOrPanic
 var ErrInvalidToken = errors.New("invalid token")
 
 func Create(email string, role model_user.Role) (string, error) {
@@ -29,30 +29,34 @@ func Create(email string, role model_user.Role) (string, error) {
 }
 
 func Parse(data string) (map[string]interface{}, error) {
+	logger.Infof("Parsing: %s", data)
+
 	token, err := jwt.Parse(data, func(token *jwt.Token) (interface{}, error) {
-		if !token.Valid {
-			return nil, ErrInvalidToken
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
 		}
 
-		return token, nil
+		return sign_key, nil
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		return claims, nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok {
+		return nil, ErrInvalidToken
 	}
 
-	return nil, ErrInvalidToken
+	return claims, nil
 }
 
 func ParseAndVerify(data string, roles []model_user.Role, writer http.ResponseWriter) (string, bool) {
 	claims, err := Parse(data)
 
 	if err != nil {
-		logger.Errorf("Could not check JWt due to: %s", err)
+		logger.Errorf("Could not check JWT due to: %s", err)
 
 		http.Error(writer, "Could not check JWT.", http.StatusInternalServerError)
 
@@ -76,9 +80,9 @@ func ParseAndVerify(data string, roles []model_user.Role, writer http.ResponseWr
 
 func parseAndVerifyExp(claims map[string]interface{}, writer http.ResponseWriter) (int64, bool) {
 	return parseAndVerifyT("exp", -1, func(to_map interface{}) (int64, bool) {
-		mapped, ok := to_map.(int64)
+		mapped, ok := to_map.(float64)
 
-		return mapped, ok
+		return int64(mapped), ok
 	}, func(value int64) bool {
 		return value > time.Now().Unix()
 	}, func() {
@@ -88,9 +92,9 @@ func parseAndVerifyExp(claims map[string]interface{}, writer http.ResponseWriter
 
 func parseAndVerifyRole(claims map[string]interface{}, desired_roles []model_user.Role, writer http.ResponseWriter) (int, bool) {
 	return parseAndVerifyT("role", -1, func(to_map interface{}) (int, bool) {
-		mapped, ok := to_map.(int)
+		mapped, ok := to_map.(float64)
 
-		return mapped, ok
+		return int(mapped), ok
 	}, func(value int) bool {
 		for role := range desired_roles {
 			if int(role) == value {
