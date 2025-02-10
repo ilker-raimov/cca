@@ -25,8 +25,8 @@ func Compile(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	java := code.New()
-	ok, output, err := java.Compile(data)
+	code := code.GetInstance()
+	ok, output, err := code.Compile(string(data))
 
 	if err != nil {
 		response.InternalServerError(writer, output)
@@ -47,6 +47,6 @@ func Check(writer http.ResponseWriter, request *http.Request) {
 
 }
 
-func Submit(writer http.ResponseWriter, request *http.Request) {
+func Test(writer http.ResponseWriter, request *http.Request) {
 
 }

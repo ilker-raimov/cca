@@ -1,12 +1,13 @@
 package code
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/google/uuid"
-	"github.com/ilker-raimov/cca/common/util/file"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,14 +17,17 @@ const (
 )
 
 type Java struct {
+	Version int
 }
 
-func New() *Java {
-	return &Java{}
+func NewJava(version int) *Java {
+	return &Java{
+		Version: version,
+	}
 }
 
-func (j Java) Compile(code []byte) (bool, string, error) {
-	logrus.Infof("Compile: %s", string(code))
+func (j *Java) Compile(code string) (bool, string, error) {
+	logrus.Infof("Compile: %s", code)
 
 	id := uuid.New().String()
 
@@ -37,8 +41,10 @@ func (j Java) Compile(code []byte) (bool, string, error) {
 
 	input_path := filepath.Join(id, JAVA_FILE)
 
-	if err := os.WriteFile(input_path, code, 0644); err != nil {
+	if err := os.WriteFile(input_path, []byte(code), 0644); err != nil {
 		logrus.Warn("Could not create file")
+
+		j.Cleanup(id)
 
 		return false, COULD_NOT_COMPILE, err
 	}
@@ -51,32 +57,31 @@ func (j Java) Compile(code []byte) (bool, string, error) {
 	if err != nil {
 		logrus.Warn("Could not execute command")
 
-		return false, COULD_NOT_COMPILE, err
+		to_replace := fmt.Sprintf("%s/Main.java", id)
+		sanitized_output := strings.Replace(string(output), to_replace, "line", -1)
+
+		j.Cleanup(id)
+
+		return false, sanitized_output, err
 	}
 
-	logrus.Info("Checking for successful compilation")
+	j.Cleanup(id)
 
-	result_path := filepath.Join(id, "Main.class")
-	ok := file.Exists(result_path)
+	return true, "Successfully compiled", nil
+}
 
-	var msg string
+func (j *Java) Test(code string, tests []any) {
 
-	if ok {
-		msg = "Successfully compiled"
-	} else {
-		msg = string(output)
-	}
+}
 
-	logrus.Info(msg)
+func (j *Java) Cleanup(id string) {
 	logrus.Info("Cleaning up")
 
 	if err := os.RemoveAll(id); err != nil {
 		logrus.Warn("Could not cleanup")
 
-		return ok, msg, err
+		return
 	}
 
 	logrus.Info("Successful cleanup")
-
-	return ok, msg, nil
 }

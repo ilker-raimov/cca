@@ -5,6 +5,7 @@ import (
 
 	"github.com/ilker-raimov/cca/common/environment"
 	"github.com/ilker-raimov/cca/common/log"
+	"github.com/ilker-raimov/cca/primary/execute"
 	"github.com/ilker-raimov/cca/primary/router"
 
 	"github.com/sirupsen/logrus"
@@ -12,6 +13,7 @@ import (
 
 func Start() {
 	log.Init()
+	execute.Init()
 	environment.Init("primary.env")
 
 	router := router.Init()

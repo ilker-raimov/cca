@@ -6,8 +6,6 @@ import (
 	"strings"
 )
 
-//GOOS=linux GOARCH=amd64 go build -o myapp main.go
-
 type Language int
 
 const (
