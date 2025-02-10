@@ -111,3 +111,4 @@ func newAll(ids []string) *Competitions {
 		Ids: ids,
 	}
 }
+

@@ -6,8 +6,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ilker-raimov/cca/common/storage"
+	"github.com/ilker-raimov/cca/common/storage/model/model_task"
 	"github.com/ilker-raimov/cca/common/storage/model/model_user"
-	model_task "github.com/ilker-raimov/cca/common/storage/model/task"
 	"github.com/ilker-raimov/cca/common/util/response"
 	"github.com/ilker-raimov/cca/primary/jwt"
 	logger "github.com/sirupsen/logrus"

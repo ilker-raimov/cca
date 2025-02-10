@@ -1,30 +1,31 @@
 <script lang="ts">
     import { Container, Row, Col, Button, Card, CardBody, CardTitle } from 'sveltestrap';
-    import * as ace from 'brace';
-    import 'brace/mode/java.js';
-    import 'brace/theme/chrome.js';
-    import AceEditor from 'svelte-ace/src/AceEditor.svelte';
+    import Editor from './Editor.svelte';
 
-    let code = `function hello() {\n  console.log("Hello, World!");\n}`;
+    let code: string = "";
+
+    function onCodeChange(data: string) {
+        code = data;
+    }
 
     function saveCode() {
-      console.log("Code saved:", code);
+        console.log("Code saved:", code);
     }
   
     function compileCode() {
-      console.log("Compiling code...");
+        console.log("Compiling code...");
     }
   
     function checkCode() {
-      console.log("Checking code...");
+        console.log("Checking code...");
     }
   
     function submitCode() {
-      console.log("Submitting code...");
+        console.log("Submitting code...");
     }
-  </script>
-  <!-- REWORK NOT TO USE CARD -->
-  <Container fluid class="vh-100">
+</script>
+
+<Container fluid class="vh-100">
     <Row class="h-100">
         <Col md="5" class="border-right p-4 overflow-auto">
             <Card>
@@ -45,7 +46,7 @@
             <Card class="flex-grow-1">
                 <CardBody>
                     <CardTitle><h3>Code Editor</h3></CardTitle>
-                    <AceEditor lang="java" theme="chrome" height=600px bind:value={code}/>
+                    <Editor onCodeChange={onCodeChange} />
                 </CardBody>
             </Card>
 

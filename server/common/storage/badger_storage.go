@@ -18,7 +18,7 @@ const (
 
 func GetBadgerInstance() *Badger {
 	badger_once.Do(func() {
-		cleanup()
+		// cleanup()
 
 		opts := badger.DefaultOptions(STORAGE_PATH).WithLoggingLevel(badger.INFO)
 		db_temp, err := badger.Open(opts)
