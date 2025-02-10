@@ -10,6 +10,7 @@
 	import Task from './page/Task.svelte';
     import ViewCompetition from "./page/ViewCompetition.svelte";
     import CreateTask from "./page/CreateTask.svelte";
+    import ViewTask from "./page/ViewTask.svelte";
 
 	const routes = {
         '/': Welcome,
@@ -19,6 +20,7 @@
         '/competitions/create': CreateCompetition,
         '/competitions/:id/view': ViewCompetition,
         '/competitions/:id/tasks/create': CreateTask,
+        '/competitions/:cid/tasks/:tid/view': ViewTask,
 		'/task': Task
 	}
 </script>

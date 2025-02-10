@@ -12,7 +12,7 @@ export type Task = {
 
 export async function getTaskIdList(competition_id: string, token: string): Promise<string[]> {
     try {
-        const response: Response = await fetch(`/api/competition/${competition_id}/tasks`, {
+        const response: Response = await fetch(`/api/competitions/${competition_id}/tasks`, {
             headers: { "Authorization": token }
         });
 
@@ -34,7 +34,7 @@ export async function getTaskIdList(competition_id: string, token: string): Prom
 
 export async function getTask(competition_id: string, id: string, token: string): Promise<Task | null> {
     try {
-        const response: Response = await fetch(`/api/competition/${competition_id}/tasks/${id}`, {
+        const response: Response = await fetch(`/api/competitions/${competition_id}/tasks/${id}`, {
             headers: { "Authorization": token }
         });
 

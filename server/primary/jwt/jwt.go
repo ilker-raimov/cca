@@ -97,7 +97,7 @@ func parseAndVerifyRole(claims map[string]interface{}, desired_roles []model_use
 
 		return int(mapped), ok
 	}, func(value int) bool {
-		for role := range desired_roles {
+		for _, role := range desired_roles {
 			if int(role) == value {
 				return true
 			}

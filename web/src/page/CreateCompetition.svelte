@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Container, Button, Form, FormGroup, Label, Input, Card, CardTitle, CardBody, Tooltip } from "sveltestrap";
+    import { Container, Button, Form, FormGroup, Label, Input, Card, CardTitle, CardBody, Tooltip, Col, Row } from "sveltestrap";
     import { error, success, warning } from "../common/toast";
     import { push } from "svelte-spa-router";
     import { check_token_or_login } from "../common/util";
@@ -113,12 +113,6 @@
                     <Label for="title">Title</Label>
                     <Input type="text" id="title" bind:value={competition.title} placeholder="Enter competition title" />
                 </FormGroup>
-
-                <FormGroup>
-                    <Label id="public_label" for="public">Is public?</Label>
-                    <Tooltip target="public_label" placement="right">Sets whether the competition is visible to everyone.</Tooltip>
-                    <Input type="checkbox" id="public" bind:checked={competition.public}/>
-                </FormGroup>
         
                 <FormGroup>
                     <Label for="description">Description</Label>
@@ -135,6 +129,11 @@
                 </FormGroup>
 
                 <FormGroup>
+
+                    <Label id="public_label" for="public">Is public?</Label>
+                    <Tooltip target="public_label" placement="right">Sets whether the competition is visible to everyone.</Tooltip>
+                    <Input type="checkbox" id="public" bind:checked={competition.public}/>
+
                     <Label id="use_overall_time_label" for="use_overall_time">Use overall time?</Label>
                     <Tooltip target="use_overall_time_label" placement="top">Takes into account overall passed time of the competition when scoring the results.</Tooltip>
                     <Input type="checkbox" id="use_overall_time" bind:checked={competition.use_overall_time}/>
@@ -143,22 +142,28 @@
                     <Tooltip target="use_execution_time_label" placement="right">Takes into account execution time of the submission when scoring the results.</Tooltip>
                     <Input type="checkbox" id="use_execution_time" bind:checked={competition.use_execution_time}/>
                 </FormGroup>
+                
+                <Row>
+                    <Col>
+                        <FormGroup>
+                            <Label for="start_date">Start date:</Label>
+                            <Input type="date" id="start_date" bind:value={competition.start_date}/>
+        
+                            <Label for="start_time">Start time:</Label>
+                            <Input type="time" id="start_time" bind:value={competition.start_time}/>
+                        </FormGroup>
+                    </Col>
 
-                <FormGroup>
-                    <Label for="start_date">Start date:</Label>
-                    <Input type="date" id="start_date" bind:value={competition.start_date}/>
-
-                    <Label for="start_time">Start time:</Label>
-                    <Input type="time" id="start_time" bind:value={competition.start_time}/>
-                </FormGroup>
-
-                <FormGroup>
-                    <Label for="end_date">End date:</Label>
-                    <Input type="date" id="end_date" bind:value={competition.end_date}/>
-
-                    <Label for="end_time">End time:</Label>
-                    <Input type="time" id="end_time" bind:value={competition.end_time}/>
-                </FormGroup>
+                    <Col>
+                        <FormGroup>
+                            <Label for="end_date">End date:</Label>
+                            <Input type="date" id="end_date" bind:value={competition.end_date}/>
+        
+                            <Label for="end_time">End time:</Label>
+                            <Input type="time" id="end_time" bind:value={competition.end_time}/>
+                        </FormGroup>
+                    </Col>
+                </Row>  
             </Form>
         
             <div class="d-flex justify-content-between mt-3">

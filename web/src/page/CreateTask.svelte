@@ -68,7 +68,7 @@
         let check_user_code: boolean = check_or_warning(task.user_code, "User code is required!");
         let check_execution_time: boolean = check_or_warning(task.execution_time > 0, "Execution time must be a non-negative integer!");
 
-        if (check_name || check_description || check_examples || check_tests || check_setup_code || check_user_code || check_execution_time) {
+        if (check_name || check_description || check_setup_code || check_user_code || check_execution_time) {
             return false
         }
 
@@ -168,20 +168,24 @@
                     </FormGroup>
                 </Col>
                 <Col sm="2">
+                    {#if examples.length > 1}
                     <Button
-                        color="danger"
-                        on:click={() => removeExample()}
-                        style="margin-top: 32px; width: 100%"
+                    color="danger"
+                    on:click={() => removeExample()}
+                    style="margin-top: 32px; width: 100%"
                     >
                         Remove Example
                     </Button>
+                    {/if}
                 </Col>
             </Row>
         {/each}
 
+        {#if examples.length < 3}
         <Button color="primary" on:click={addExample}>
             Add Example
         </Button>
+        {/if}
 
         <h5 class="mt-4">Tests</h5>
         {#each tests as test, index}
@@ -209,6 +213,7 @@
                     </FormGroup>
                 </Col>
                 <Col sm="2">
+                    {#if tests.length > 1}
                     <Button
                         color="danger"
                         on:click={() => removeTest()}
@@ -216,13 +221,16 @@
                     >
                         Remove Test
                     </Button>
+                    {/if}
                 </Col>
             </Row>
         {/each}
 
+        {#if tests.length < 5}
         <Button color="primary" on:click={addTest}>
             Add Test
         </Button>
+        {/if}
 
         <Row class="mt-2">
             <Col>

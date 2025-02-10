@@ -73,7 +73,7 @@ func New(title string, public bool, description string, language setup.Language,
 	use_overall_time bool, use_execution_time bool, start_time int64, end_time int64) *Competition {
 	id := uuid.New().String()
 
-	return new(id, public, title, description, language, use_overall_time, use_overall_time, start_time, end_time)
+	return new(id, public, title, description, language, use_overall_time, use_execution_time, start_time, end_time)
 }
 
 func NewUser(email string) *CompetitionsUser {
