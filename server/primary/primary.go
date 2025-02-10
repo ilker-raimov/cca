@@ -3,6 +3,7 @@ package primary
 import (
 	"net/http"
 
+	"github.com/ilker-raimov/cca/common/environment"
 	"github.com/ilker-raimov/cca/common/log"
 	"github.com/ilker-raimov/cca/primary/router"
 
@@ -11,6 +12,7 @@ import (
 
 func Start() {
 	log.Init()
+	environment.Init("primary.env")
 
 	router := router.Init()
 

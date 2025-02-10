@@ -13,7 +13,6 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-var sign_key = []byte(environment.GetOrDefault("jwt.sign.key", "2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D")) //switch to getOrPanic
 var ErrInvalidToken = errors.New("invalid token")
 
 func Create(email string, role model_user.Role) (string, error) {
@@ -24,6 +23,7 @@ func Create(email string, role model_user.Role) (string, error) {
 		"exp":   expire_at,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	sign_key := []byte(environment.GetOrPanic("JWT_SIGN_KEY"))
 
 	return token.SignedString(sign_key)
 }
@@ -31,6 +31,7 @@ func Create(email string, role model_user.Role) (string, error) {
 func Parse(data string) (map[string]interface{}, error) {
 	logger.Infof("Parsing: %s", data)
 
+	sign_key := []byte(environment.GetOrPanic("JWT_SIGN_KEY"))
 	token, err := jwt.Parse(data, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid

@@ -1,13 +1,18 @@
 package environment
 
 import (
+	"fmt"
 	"os"
 
-	env "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 func Init(filename string) {
-	env.Load(filename)
+	err := godotenv.Load(filename)
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func Get(key string) string {
@@ -19,6 +24,18 @@ func GetOrDefault(key string, fallback string) string {
 
 	if value == "" {
 		return fallback
+	}
+
+	return value
+}
+
+func GetOrPanic(key string) string {
+	value := Get(key)
+
+	if value == "" {
+		message := fmt.Sprintf("Missing environment variable: %s", key)
+
+		panic(message)
 	}
 
 	return value
