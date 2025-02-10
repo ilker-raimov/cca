@@ -23,21 +23,21 @@ func Create(email string, role model_user.Role) (string, error) {
 		"exp":   expire_at,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	sign_key := []byte(environment.GetOrPanic("JWT_SIGN_KEY"))
+	sign_key := environment.GetOrPanic("JWT_SIGN_KEY")
 
-	return token.SignedString(sign_key)
+	return token.SignedString([]byte(sign_key))
 }
 
 func Parse(data string) (map[string]interface{}, error) {
 	logger.Infof("Parsing: %s", data)
 
-	sign_key := []byte(environment.GetOrPanic("JWT_SIGN_KEY"))
+	sign_key := environment.GetOrPanic("JWT_SIGN_KEY")
 	token, err := jwt.Parse(data, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}
 
-		return sign_key, nil
+		return []byte(sign_key), nil
 	})
 
 	if err != nil {
