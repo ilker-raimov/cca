@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container, Button, Form, FormGroup, Label, Input, Card, CardTitle, CardBody, Tooltip } from "sveltestrap";
-    import { error, warning } from "../common/toast";
+    import { error, success, warning } from "../common/toast";
     import { push } from "svelte-spa-router";
     import { check_token_or_login } from "../common/util";
     
@@ -16,6 +16,10 @@
         language: number;
         use_overall_time: boolean;
         use_execution_time: boolean;
+        start_date: string;
+        start_time: string;
+        end_date: string;
+        end_time: string;
     };
 
     check_token_or_login()
@@ -50,11 +54,17 @@
         description: "",
         language: -1,
         use_overall_time: false,
-        use_execution_time: false
+        use_execution_time: false,
+        start_date: "",
+        start_time: "",
+        end_date: "",
+        end_time: ""
     };
 
     function checkInput(): boolean {
-        if (!competition.title || !competition.description || competition.language === -1) {
+        if (!competition.title || !competition.description || competition.language === -1 ||
+            !competition.start_date || !competition.start_time || !competition.end_date || !competition.end_time
+        ) {
             warning("Empty competition properties.")
 
             return false;
@@ -80,6 +90,8 @@
             if (!e.ok) {
                 warning(data);
             } else {
+                success("Successfully created competition.")
+
                 push('/dashboard');
             }
         }).catch((err: any) => error(err));
@@ -130,7 +142,22 @@
                     <Label id="use_execution_time_label" for="use_execution_time">Use execution time?</Label>
                     <Tooltip target="use_execution_time_label" placement="right">Takes into account execution time of the submission when scoring the results.</Tooltip>
                     <Input type="checkbox" id="use_execution_time" bind:checked={competition.use_execution_time}/>
-                
+                </FormGroup>
+
+                <FormGroup>
+                    <Label for="start_date">Start date:</Label>
+                    <Input type="date" id="start_date" bind:value={competition.start_date}/>
+
+                    <Label for="start_time">Start time:</Label>
+                    <Input type="time" id="start_time" bind:value={competition.start_time}/>
+                </FormGroup>
+
+                <FormGroup>
+                    <Label for="end_date">End date:</Label>
+                    <Input type="date" id="end_date" bind:value={competition.end_date}/>
+
+                    <Label for="end_time">End time:</Label>
+                    <Input type="time" id="end_time" bind:value={competition.end_time}/>
                 </FormGroup>
             </Form>
         

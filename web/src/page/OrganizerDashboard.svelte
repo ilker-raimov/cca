@@ -36,7 +36,7 @@
 
         const token = sessionStorage.getItem("token") ?? "";
 
-        let competition_id_list: string[] = await getCompetitionIdList(token);
+        const competition_id_list: string[] = await getCompetitionIdList(token);
         
         for (let competition_id of competition_id_list) {
             const competition: Competition | null = await getCompetition(competition_id, token);

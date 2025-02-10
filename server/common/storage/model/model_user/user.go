@@ -27,6 +27,13 @@ const (
 	COULD_NOT_LOAD  = "Could not load user."
 )
 
+var (
+	ROLES_COMPETITOR    = []Role{COMPETITOR}
+	ROLES_ORGANIZER     = []Role{ORGANIZER}
+	ROLES_ADMINISTRATOR = []Role{ADMINISTRATOR}
+	ROLE_COMPETE        = []Role{COMPETITOR, ORGANIZER}
+)
+
 func Roles() map[int]string {
 	return map[int]string{
 		0: "COMPETITOR",

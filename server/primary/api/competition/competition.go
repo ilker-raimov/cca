@@ -2,6 +2,7 @@ package competition
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/ilker-raimov/cca/common/setup"
@@ -9,6 +10,7 @@ import (
 	"github.com/ilker-raimov/cca/common/storage/model/model_competition"
 	"github.com/ilker-raimov/cca/common/storage/model/model_user"
 	"github.com/ilker-raimov/cca/common/util/response"
+	time_util "github.com/ilker-raimov/cca/common/util/time"
 	"github.com/ilker-raimov/cca/primary/jwt"
 	logger "github.com/sirupsen/logrus"
 )
@@ -19,12 +21,10 @@ func Languages(writer http.ResponseWriter, request *http.Request) {
 	response.WriteOrInternal(writer, languages)
 }
 
-var list_role_list = []model_user.Role{model_user.COMPETITOR, model_user.ORGANIZER}
-
 func List(writer http.ResponseWriter, request *http.Request) {
 	authorization := request.Header.Get("Authorization")
 
-	email, is_authorization_ok := jwt.ParseAndVerify(authorization, list_role_list, writer)
+	email, is_authorization_ok := jwt.ParseAndVerify(authorization, model_user.ROLE_COMPETE, writer)
 
 	if !is_authorization_ok {
 		return
@@ -70,6 +70,10 @@ type CreateRequest struct {
 	Language         setup.Language `json:"language"`
 	UseOverallTime   bool           `json:"use_overall_time"`
 	UseExecutionTime bool           `json:"use_execution_time"`
+	StartDate        string         `json:"start_date"`
+	StartTime        string         `json:"start_time"`
+	EndDate          string         `json:"end_date"`
+	EndTime          string         `json:"end_time"`
 }
 
 func Create(writer http.ResponseWriter, request *http.Request) {
@@ -77,7 +81,7 @@ func Create(writer http.ResponseWriter, request *http.Request) {
 
 	authorization := request.Header.Get("Authorization")
 
-	email, is_authorization_ok := jwt.ParseAndVerify(authorization, list_role_list, writer)
+	email, is_authorization_ok := jwt.ParseAndVerify(authorization, model_user.ROLES_ORGANIZER, writer)
 
 	if !is_authorization_ok {
 		return
@@ -93,10 +97,23 @@ func Create(writer http.ResponseWriter, request *http.Request) {
 
 	logger.Infof("Email: %s", email)
 	logger.Infof("Title: %s", create.Title)
-	logger.Infof("Description: %s", create.Description)
 	logger.Infof("Language: %s", create.Language.String())
 
-	competition := model_competition.New(create.Title, create.Public, create.Description, create.Language, create.UseOverallTime, create.UseExecutionTime)
+	start_timestamp, start_err := time_util.Convert(create.StartDate, create.StartTime)
+	end_timestamp, end_err := time_util.Convert(create.EndDate, create.EndTime)
+	current_timestamp := time.Now().Unix()
+
+	logger.Infof("%d %d %d", start_timestamp, end_timestamp, current_timestamp)
+
+	if start_err != nil || end_err != nil ||
+		start_timestamp >= end_timestamp || current_timestamp >= start_timestamp {
+		response.BadRequest(writer, "Invalid time.")
+
+		return
+	}
+
+	competition := model_competition.New(create.Title, create.Public, create.Description, create.Language,
+		create.UseOverallTime, create.UseExecutionTime, start_timestamp, end_timestamp)
 
 	logger.Infof("Created competition: %v", competition)
 
@@ -162,7 +179,7 @@ func Create(writer http.ResponseWriter, request *http.Request) {
 func Get(writer http.ResponseWriter, request *http.Request) {
 	authorization := request.Header.Get("Authorization")
 
-	_, is_authorization_ok := jwt.ParseAndVerify(authorization, list_role_list, writer)
+	_, is_authorization_ok := jwt.ParseAndVerify(authorization, model_user.ROLE_COMPETE, writer)
 
 	if !is_authorization_ok {
 		return

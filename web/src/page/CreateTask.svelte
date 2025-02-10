@@ -1,15 +1,15 @@
 <script lang="ts">
     import { Col, Button, Form, FormGroup, Label, Input, Row } from "sveltestrap";
+    import Editor from "./Editor.svelte";
+    import { check_or_warning, error, warning, success } from "../common/toast";
+    import { check_token_or_login } from "../common/util";
+    import { push } from "svelte-spa-router";
 
     export let params: any;
 
-    const id: string = params.id;
+    check_token_or_login();
 
-    type Example = {
-        id: number,
-        input: string;
-        output: string;
-    }
+    const competition_id: string = params.id;
 
     type Test = {
         id: number,
@@ -20,23 +20,23 @@
     type Task = {
         name: string;
         description: string;
-        examples: Example[];
-        execution_time: string;
-        tests: Test[]
+        execution_time: number;
+        setup_code: string;
+        user_code: string;
     };
 
-    let examples: Example[] = [ {id: 0, input: "", output: ""} ]
+    let examples: Test[] = [ {id: 0, input: undefined, output: undefined} ]
     let tests: Test[] = [ {id: 0, input: undefined, output: undefined} ]
     let task: Task = {
         name: "",
         description: "",
-        examples: examples,
-        execution_time: "",
-        tests: tests
+        execution_time: 2,
+        setup_code: "",
+        user_code: ""
     }
 
     function addExample(): void {
-        examples = [...examples, { id: examples.length, input: "", output: "" }];
+        examples = [...examples, { id: examples.length, input: undefined, output: undefined }];
     }
 
     function removeExample(): void {
@@ -50,6 +50,62 @@
     function removeTest(): void {
         tests = tests.slice(0, tests.length - 1);
     }
+
+    const handleSetupCodeUpdate = (code: string) => {
+        task.setup_code = code;
+    };
+
+    const handleUserCodeUpdate = (code: string) => {
+        task.user_code = code;
+    };
+
+    function checkInput(): boolean {
+        let check_name: boolean = check_or_warning(task.name, "Name is required!");
+        let check_description: boolean = check_or_warning(task.description, "Description is required!");
+        let check_examples: boolean = check_or_warning(examples.length !== 0, "Examples are required!");
+        let check_tests: boolean = check_or_warning(tests.length !== 0, "Tests are required!");
+        let check_setup_code: boolean = check_or_warning(task.setup_code, "Setup code is required!");
+        let check_user_code: boolean = check_or_warning(task.user_code, "User code is required!");
+        let check_execution_time: boolean = check_or_warning(task.execution_time > 0, "Execution time must be a non-negative integer!");
+
+        if (check_name || check_description || check_examples || check_tests || check_setup_code || check_user_code || check_execution_time) {
+            return false
+        }
+
+        return true;
+    }
+
+    async function createTask() {
+        let is_input_ok: boolean = checkInput();
+
+        if (!is_input_ok) {
+            return;
+        }
+
+        const token: string = sessionStorage.getItem("token") ?? "";
+
+        try {
+            const response: Response = await fetch(`/api/competitions/${competition_id}/tasks`, {
+                method: "POST",
+                headers: { "Authorization": token },
+                body: JSON.stringify(task)
+            });
+
+            if (!response.ok) {
+                const data: string = await response.text();
+
+                warning(data);
+
+                return;
+            }
+
+            success("Successfully created task!");
+
+            push(`/competitions/${competition_id}/view`)
+        } catch(err: any) {
+            error(err);
+        }
+    }
 </script>
 
 <div class="text-center mb-4">
@@ -59,7 +115,7 @@
 <main>
     <Form>
         <Row>
-            <Col class="w-25">
+            <Col>
                 <FormGroup>
                     <Label for="taskName">Task Name</Label>
                     <Input
@@ -73,7 +129,7 @@
         </Row>
 
         <Row>
-            <Col class="w-25">
+            <Col>
                 <FormGroup>
                     <Label for="taskDescription">Description</Label>
                     <Input
@@ -93,10 +149,10 @@
                     <FormGroup>
                         <Label for={`exampleInput${example.id}`}>Example {example.id + 1} Input</Label>
                         <Input
-                            type="text"
+                            type="file"
                             id={`exampleInput${example.id}`}
-                            bind:value={example.input}
-                            placeholder="Enter example input"
+                            accept=".txt"
+                            bind:files={example.input}
                         />
                     </FormGroup>
                 </Col>
@@ -104,10 +160,10 @@
                     <FormGroup>
                         <Label for={`exampleOutput${example.id}`}>Example {example.id + 1} Output</Label>
                         <Input
-                            type="text"
+                            type="file"
                             id={`exampleOutput${example.id}`}
-                            bind:value={example.output}
-                            placeholder="Enter example output"
+                            accept=".txt"
+                            bind:files={example.output}
                         />
                     </FormGroup>
                 </Col>
@@ -169,7 +225,7 @@
         </Button>
 
         <Row class="mt-2">
-            <Col class="w-25">
+            <Col>
                 <FormGroup>
                     <Label for="executionTime">Execution Time</Label>
                     <Input
@@ -182,8 +238,24 @@
             </Col>
         </Row>
 
-        <Button color="success" class="mt-4" style="width: 100%">
-            Save Task
+        <Row class="mt-2">
+            <Col>
+                <FormGroup>
+                    <Label for="setup_code">Setup Code</Label>
+                    <Editor id="editor_setup" onCodeChange={handleSetupCodeUpdate}></Editor>
+                </FormGroup>
+            </Col>
+
+            <Col>
+                <FormGroup>
+                    <Label for="user_code">User Code</Label>
+                    <Editor id="editor_user" onCodeChange={handleUserCodeUpdate}></Editor>
+                </FormGroup>
+            </Col>
+        </Row>
+
+        <Button color="success" class="mt-4" style="width: 100%" on:click={createTask}>
+            Create Task
         </Button>
     </Form>
 </main>

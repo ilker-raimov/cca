@@ -7,6 +7,7 @@ import (
 	"github.com/ilker-raimov/cca/primary/api/auth"
 	"github.com/ilker-raimov/cca/primary/api/code"
 	"github.com/ilker-raimov/cca/primary/api/competition"
+	"github.com/ilker-raimov/cca/primary/api/task"
 	"github.com/ilker-raimov/cca/primary/api/users"
 
 	"github.com/gorilla/mux"
@@ -28,8 +29,11 @@ func Init() *mux.Router {
 
 	router.HandleFunc("/api/competitions/languages", competition.Languages).Methods("GET")
 	router.HandleFunc("/api/competitions", competition.List).Methods("GET")
-	router.HandleFunc("/api/competitions/{competition_id}", competition.Get).Methods("GET")
 	router.HandleFunc("/api/competitions", competition.Create).Methods("POST")
+	router.HandleFunc("/api/competitions/{competition_id}", competition.Get).Methods("GET")
+	router.HandleFunc("/api/competitions/{competition_id}/tasks", task.List).Methods("GET")
+	router.HandleFunc("/api/competitions/{competition_id}/tasks", task.Create).Methods("POST")
+	router.HandleFunc("/api/competitions/{competition_id}/tasks/{task_id}", task.Get).Methods("GET")
 
 	router.HandleFunc("/api/users/roles", users.Roles).Methods("GET")
 
